@@ -5,4 +5,4 @@ require("./")({
 	"*"
 })
 
-print(std.range(3))
+table.zip({"Alice", "Bob", "TungTungTungSahur"}, {1, 2, 67})
