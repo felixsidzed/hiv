@@ -2,7 +2,7 @@
 --!optimize 2
 
 function isint(n: number): boolean
-	return math.floor(n) == n
+	return n % 1 == 0
 end
 
 function sum(...)
