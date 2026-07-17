@@ -1,7 +1,7 @@
 --!strict
 --!optimize 2
 
-function bind<R>(f: (...any) -> R, ...): (...any) -> R
+function bind<R>(f: (...any) -> R?, ...): (...any) -> R?
 	local bound = {...}
 	return function(...)
 		local argv = table.clone(bound)
@@ -21,22 +21,26 @@ end
 function once<R>(f: (...any) -> R): (...any) -> R
 	local called, result = false, nil :: any
 	return function(...)
-		if not called then
-			called = true
-			result = f(...)
+		if called then
+			return result
 		end
+		called = true
+		result = f(...)
 		return result
 	end
 end
 
 function range(start: number, stop: number?, step: number?): { number }
-	local result = {}
 	local s = step or 1
+	local result = {}
+
+	local n = 0
 	if stop then
-		for i=start,stop-s,s do table.insert(result, i) end
+		for i = start, stop - s, s do n += 1; result[n] = i end
 	else
-		for i=0,start-s,s do table.insert(result, i) end
+		for i = 0, start - s, s do n += 1; result[n] = i end
 	end
+
 	return result
 end
 
@@ -46,5 +50,5 @@ function try<R>(f: () -> R, fb: R): R
 end
 
 return {
-	bind = bind,  memoize = memoize, once = once, try = try
+	bind = bind, range = range, memoize = memoize, once = once, try = try
 }

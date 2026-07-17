@@ -6,12 +6,14 @@ function isint(n: number): boolean
 end
 
 function sum(...)
+	-- since select is a known builtin this is faster than localizing select
 	local result = 0
-	for _, v in {...} do result += v end
+	for i = 1, select("#", ...) do
+		result += select(i, ...)
+	end
 	return result
 end
 
 return {
-	isint = isint,
-	sum = sum
+	isint = isint, sum = sum
 }

@@ -11,14 +11,20 @@ end
 
 function zip(...): { any }
 	local va = {...}
+	local nva = #va
 	local minl = math.huge
-	for _, arr in va do minl = math.min(minl, #arr) end
+	for i = 1, nva do
+		local len = #va[i]
+		if len < minl then minl = len end
+	end
 	
-	local result = {}	
+	local result = table.create(minl)
 	for index = 1, minl do
-		local pair = {}
-		for i, arr in va do pair[i] = arr[index] end
-		table.insert(result, pair)
+		local tuple = table.create(nva)
+		for i = 1, nva do
+			tuple[i] = va[i][index]
+		end
+		result[index] = tuple
 	end
 	return result
 end
@@ -50,8 +56,9 @@ function values<V>(t: {[any]: V}): {V}
 end
 
 function transform<T, U>(t: {T}, f: (T) -> U): {U}
-	local result = table.create(#t)
-	for i, v in t do result[i] = f(v) end
+	local n = #t
+	local result = table.create(n)
+	for i=1,n do result[i] = f(t[i]) end
 	return result
 end
 
@@ -79,12 +86,17 @@ function count<T>(t: {T}, f: (T) -> boolean): number
 end
 
 function chunk<T>(t: {T}, n: number): {{T}}
-	local result, i = {}, 1
-	while i <= #t do
-		local c = {}
-		for j = i, math.min(i + n - 1, #t) do table.insert(c, t[j]) end
-		table.insert(result, c)
-		i += n
+	local i = 1
+	local result = {}
+	for j = 1, #t, n do
+		local c, ci = table.create(n), 1
+		for l = j, math.min(j + n - 1, #t) do
+			c[ci] = t[l]
+			ci += 1
+		end
+		
+		result[i] = c
+		i += 1
 	end
 	return result
 end
